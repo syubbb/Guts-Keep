@@ -3,100 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUTS填表小工具 V</title>
+    <title>GUTS 填表小工具 (Classic Theme)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
-        .bookmark-btn { cursor: grab; user-select: none; }
-        .bookmark-btn:active { cursor: grabbing; }
+        /* 復古字體設定 */
+        body { 
+            font-family: arial, sans-serif; 
+            background-color: #fff; 
+            font-size: 13px;
+        }
+        /* 連結樣式 */
+        a { color: #0000cc; text-decoration: underline; cursor: pointer; }
+        a:hover { color: #0000cc; }
         
+        /* GUTS 經典綠色標題 */
+        .guts-header-green {
+            background-color: #93c47d;
+            border-top: 1px solid #93c47d;
+            border-bottom: 1px solid #93c47d;
+            color: #000;
+            font-weight: bold;
+            padding: 4px 6px;
+        }
+
+        /* 模擬 GUTS 表格 */
+        .guts-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+        }
+        .guts-table th {
+            background-color: #eee;
+            text-align: left;
+            padding: 4px 6px;
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+            color: #000;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+        .guts-table td {
+            padding: 6px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        
+        /* 輸入區樣式 */
         #pasteArea {
-            min-height: 250px;
-            max-height: 500px;
+            min-height: 150px;
+            max-height: 400px;
             overflow-y: auto;
             white-space: normal;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: monospace;
             background: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            margin: 10px;
+            outline: none;
+        }
+        #pasteArea:focus { border-color: #4d90fe; }
+
+        /* 經典按鈕樣式 */
+        .classic-btn {
+            background: #f8f8f8;
+            border: 1px solid #c6c6c6;
+            color: #333;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            font-family: arial, sans-serif;
+            cursor: pointer;
+            border-radius: 2px;
+            background-image: linear-gradient(to bottom, #fefefe, #f3f3f3);
+        }
+        .classic-btn:hover {
+            border-color: #999;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            color: #000;
+        }
+        .classic-btn:active {
+            background: #e9e9e9;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* 結果列高亮 (黃色背景) */
+        .ticket-highlight {
+            background-color: #fff2cc;
+            border: 1px solid #fce8b2;
+        }
+        
+        /* 拖曳連結樣式 */
+        .bookmarklet-link {
+            font-weight: bold;
+            font-size: 14px;
+            color: #0000cc;
+            cursor: grab;
+        }
+        .bookmarklet-link:active {
+            cursor: grabbing;
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-800 flex flex-col">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Header -->
-    <div class="bg-slate-900 text-white py-6 px-6 shadow-md relative">
-        <div class="max-w-6xl mx-auto flex justify-between items-center relative z-10">
-            <div>
-                <h1 class="text-2xl font-bold tracking-wider flex items-center gap-3">
-                    <i class="fas fa-paragraph text-emerald-400"></i> GUTS填表小工具
-                    <span class="text-xs bg-emerald-600 text-white px-2 py-1 rounded ml-2 border border-emerald-500"></span>
-                </h1>
-                <p class="text-slate-400 text-sm mt-1">請務必做好備份習慣喔</p>
-            </div>
+    <!-- Top Bar (Google Logo & Search) -->
+    <div class="flex items-center p-2 mb-2 border-b border-gray-200">
+        <div class="mr-4 select-none">
+            <span class="text-blue-600 font-serif text-2xl font-bold">G</span>
+            <span class="text-red-500 font-serif text-2xl font-bold">o</span>
+            <span class="text-yellow-500 font-serif text-2xl font-bold">o</span>
+            <span class="text-blue-600 font-serif text-2xl font-bold">g</span>
+            <span class="text-green-600 font-serif text-2xl font-bold">l</span>
+            <span class="text-red-500 font-serif text-2xl font-bold">e</span>
+            <span class="text-slate-500 font-sans text-xl ml-1 font-bold italic relative -top-0.5">GUTS</span>
         </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-6 py-8 w-full flex-1">
         
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Step 1: Input -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-full">
-                <div class="flex items-center gap-3 mb-4 border-b pb-4">
-                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">1</div>
-                    <h2 class="text-xl font-bold text-slate-700">初始化資料</h2>
-                </div>
-
-                <div class="space-y-4 flex-1 flex flex-col">
-                    <div class="text-sm text-slate-600 bg-slate-50 p-3 rounded border border-slate-100">
-                        <i class="fas fa-check mr-1 text-emerald-600"></i> 
-                        <strong>更新：</strong><br>
-                        修復了「編輯內容」時，無法更改文字顏色與背景底色的問題。
-                    </div>
-
-                    <!-- ContentEditable Div -->
-                    <div id="pasteArea" contenteditable="true" 
-                         class="w-full p-4 border-2 border-dashed border-slate-300 rounded-lg focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all text-sm flex-1"
-                         data-placeholder="請在此貼上內容..."></div>
-                    
-                    <div class="flex justify-between items-center pt-2">
-                        <span id="statusMsg" class="text-xs text-slate-400 font-mono">等待輸入...</span>
-                        <button onclick="generateBookmarklet()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold transition-all shadow hover:shadow-lg flex items-center gap-2">
-                            <i class="fas fa-bolt"></i> 產生插件
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 2: Result -->
-            <div id="resultArea" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 opacity-50 pointer-events-none transition-all duration-300 flex flex-col h-full">
-                <div class="flex items-center gap-3 mb-4 border-b pb-4">
-                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">2</div>
-                    <h2 class="text-xl font-bold text-slate-700">安裝插件</h2>
-                </div>
-
-                <div class="flex flex-col items-center justify-center flex-1 py-6">
-                    <div class="relative group cursor-grab active:cursor-grabbing transform hover:scale-105 transition-transform duration-300">
-                        <div class="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
-                        <a id="bookmarkletBtn" href="#" onclick="alert('請拖曳此按鈕到書籤列，而不是直接點擊！'); return false;" 
-                           class="bookmark-btn relative flex items-center gap-4 bg-slate-900 text-white px-10 py-6 rounded-full font-bold text-xl shadow-2xl border border-slate-700">
-                            <span class="bg-yellow-400 text-slate-900 w-8 h-8 rounded-full flex items-center justify-center text-sm">G</span>
-                            <span>GUTS填表小工具</span>
-                        </a>
-                    </div>
-                    
-                    <div class="mt-8 text-center space-y-2">
-                        <p class="text-sm text-slate-600 font-medium">拖曳上方按鈕至書籤列 (覆蓋舊版)</p>
-                        <p class="text-xs text-slate-400">已解決顏色編輯無效問題</p>
-                    </div>
-                </div>
-            </div>
+        <div class="flex-1 flex items-center">
+            <input type="text" value="Search tickets..." class="border border-gray-400 p-1 w-full max-w-lg text-sm px-2 shadow-inner bg-white text-gray-400" readonly>
+            <button class="classic-btn ml-2">Search</button>
+        </div>
+        
+        <div class="text-xs text-right text-gray-600">
+            <b>user</b> | <a href="#" class="text-blue-800">Settings</a> | <a href="#" class="text-blue-800">Help</a>
         </div>
     </div>
 
-    <!-- Script -->
+    <!-- Main Layout -->
+    <div class="flex flex-1 px-2">
+        
+        <!-- Sidebar -->
+        <div class="w-48 pr-4 flex-shrink-0 text-sm hidden md:block pt-2">
+            <div class="mb-4 flex flex-col gap-1.5 pl-1">
+                <a href="#" class="font-bold text-red-700">Compose Ticket</a>
+                <div class="h-px bg-gray-300 my-1"></div>
+                <a href="#" class="text-blue-900 font-bold">My Inbox</a>
+                <a href="#" class="text-blue-900">Starred</a>
+                <a href="#" class="text-blue-900">Sent Mail</a>
+                <a href="#" class="text-blue-900">Drafts</a>
+            </div>
+
+            <div class="bg-[#e0eccd] p-1 mb-1 font-bold text-black border-t border-l border-r border-[#ccc] mt-4">Views</div>
+            <div class="bg-[#93c47d] p-1 text-black font-bold flex items-center border border-[#93c47d]">
+                <i class="fas fa-caret-down mr-1"></i>
+                <span class="underline cursor-pointer">All Tickets</span>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 min-w-0 pt-2">
+            
+            <!-- Step 1: Input Area -->
+            <div class="border border-[#93c47d] mb-4 shadow-sm">
+                <div class="guts-header-green flex justify-between items-center">
+                    <span>1. Initialize Data (貼上 Excel/HTML)</span>
+                </div>
+                
+                <div class="bg-[#f3f3f3] p-2 border-b border-gray-300 flex justify-between items-center">
+                    <span class="text-xs text-gray-600">Paste your content below:</span>
+                    <button onclick="generateBookmarklet()" class="classic-btn border-green-600 text-green-800 font-bold">
+                        <i class="fas fa-bolt mr-1"></i> Generate Tool
+                    </button>
+                </div>
+
+                <!-- Input Div -->
+                <div id="pasteArea" contenteditable="true" data-placeholder="請在此貼上內容..."></div>
+
+                <div class="bg-[#f3f3f3] p-1 border-t border-gray-300 text-right">
+                     <div id="statusMsg" class="text-xs text-gray-500 font-mono px-2">Waiting for input...</div>
+                </div>
+            </div>
+
+            <!-- Step 2: Result Area (Table Style with Date) -->
+            <div id="resultArea" class="hidden opacity-0 transition-opacity duration-500">
+                <div class="flex justify-between items-end mb-1 px-1">
+                     <div class="text-sm font-bold text-gray-700">Generated Ticket (Drag link to bookmarks):</div>
+                     <div class="text-xs"><b>1-1</b> of <b>1</b></div>
+                </div>
+
+                <table class="guts-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Ticket #</th>
+                            <th>Summary (Bookmarklet)</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 60px;">Priority</th>
+                            <th style="width: 130px;">Date Opened</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- This Row is the Bookmarklet -->
+                        <tr class="ticket-highlight">
+                            <td>
+                                <a href="#" class="text-blue-900">82394012</a>
+                            </td>
+                            <td>
+                                <i class="fas fa-star text-orange-400 mr-1"></i>
+                                <!-- The Actual Bookmarklet Link -->
+                                <a id="bookmarkletBtn" href="javascript:void(0)" class="bookmarklet-link" title="Drag me to bookmarks bar">
+                                    GUTS 填表小工具 V4
+                                </a>
+                                <span class="text-xs text-gray-500 ml-2">- Drag this link to bookmarks bar</span>
+                            </td>
+                            <td>
+                                <span class="bg-green-100 text-green-800 px-1 border border-green-200 text-xs">Ready</span>
+                            </td>
+                            <td>P2</td>
+                            <td id="dateDisplay" class="text-gray-600">--/--/---- --:--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Script (Original Logic Preserved) -->
     <script>
+        // Set date on load
+        const now = new Date();
+        const formattedDate = `${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        document.getElementById('dateDisplay').innerText = formattedDate;
+
+        // Bind click event to prevent default
+        document.getElementById('bookmarkletBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('請拖曳此連結到書籤列，而不是直接點擊！\n\nPlease drag this link to your bookmarks bar.');
+        });
+
         function parsePasteData() {
             const pasteArea = document.getElementById('pasteArea');
             if (!pasteArea.innerText.trim()) return [];
@@ -104,7 +239,6 @@
             const table = pasteArea.querySelector('table');
             const data = [];
 
-            // Helper: Color Extraction
             const getBgColor = (el) => {
                 if (!el) return '#ffffff';
                 if (el.style && el.style.backgroundColor) return el.style.backgroundColor;
@@ -123,14 +257,12 @@
                 } catch(e) { return '#ffffff'; }
             };
 
-            // Helper: Content Cleaning
             const cleanHtmlContent = (html) => {
                 if (!html) return '';
                 let clean = html.replace(/<meta[^>]*>/g, '');
                 return clean.trim();
             };
 
-            // Helper: Header Detection
             const isHeader = (t, c) => {
                 const T = t.toLowerCase().trim();
                 const C = c.toLowerCase().trim();
@@ -144,7 +276,6 @@
                 return false;
             };
 
-            // Helper: Whitespace Normalization
             const normalizeText = (text) => {
                 if(!text) return '';
                 return text.replace(/\t/g, ' '); 
@@ -191,13 +322,23 @@
         function generateBookmarklet() {
             const statusMsg = document.getElementById('statusMsg');
             const resultArea = document.getElementById('resultArea');
+            const bookmarkletBtn = document.getElementById('bookmarkletBtn');
             const parsedData = parsePasteData();
             
-            if (parsedData.length === 0) statusMsg.innerHTML = '<span class="text-slate-500">建立空白工具</span>';
-            else statusMsg.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fas fa-check"></i> 已封裝 ${parsedData.length} 筆資料</span>`;
+            if (parsedData.length === 0) {
+                statusMsg.innerHTML = 'Status: <span class="text-red-600 font-bold">Empty Data</span>';
+                return; 
+            } else {
+                statusMsg.innerHTML = `Status: <span class="text-green-700 font-bold">Processed ${parsedData.length} records</span>`;
+            }
             
-            resultArea.classList.remove('opacity-50', 'pointer-events-none');
-            const jsonData = JSON.stringify(parsedData);
+            resultArea.classList.remove('hidden');
+            // Trigger reflow
+            void resultArea.offsetWidth;
+            resultArea.classList.remove('opacity-0');
+            
+            let jsonData = JSON.stringify(parsedData);
+            jsonData = jsonData.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 
             // --- BOOKMARKLET CODE ---
             const code = `
@@ -717,7 +858,8 @@
 
             const cleanCode = code.trim();
             const href = "javascript:" + encodeURIComponent(cleanCode);
-            bookmarkletBtn.href = href;
+            // FIX: Explicitly get the element by ID to ensure it works in all strict modes
+            document.getElementById('bookmarkletBtn').href = href;
         }
     </script>
 </body>
